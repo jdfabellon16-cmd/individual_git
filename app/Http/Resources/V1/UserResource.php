@@ -1,0 +1,29 @@
+<?php
+
+namespace App\Http\Resources\V1;
+
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
+
+class UserResource extends JsonResource
+{
+    public function toArray(Request $request): array
+    {
+        return [
+            'type' => 'user',
+            'id' => $this->id,
+            'attributes' => [
+                'name' => $this->name,
+                'email' => $this->email,
+                $this->mergeWhen($request->routeIs(['authors.*', 'users.*']), [
+                    'emailVerifiedAt' => $this->email_verified_at,
+                    'createdAt' => $this->created_at,
+                    'updatedAt' => $this->updated_at,
+                ]),
+            ],
+            'links' => [
+                'self' => '/api/v1/authors/' . $this->id,
+            ],
+        ];
+    }
+}
